@@ -1,4 +1,4 @@
-from main.lib.tools import BaseTool
+from main.bot.lib.tools import BaseTool
 from pydantic import Field, validator
 from typing import List, Optional  
 from  pyowm import OWM

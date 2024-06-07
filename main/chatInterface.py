@@ -1,4 +1,5 @@
 from typing import Callable
+import aioconsole
 
 class ChatInterface():
     def __init__(self, callback:  Callable[[str],str], save:  Callable[[str],str], clear:  Callable[[str],str]) -> None:
@@ -7,11 +8,11 @@ class ChatInterface():
         self.save = save
         self.clear = clear
         
-    def start_chat(self):
+    async def start_chat(self):
         while True:
             print('Type a message: ')
             while True:
-                line = input()
+                line = await aioconsole.ainput()
                 if line == '':
                     break
                 else:
@@ -19,11 +20,11 @@ class ChatInterface():
             if '!quit' in self.message:
                 break
             if "!save" in self.message:
-                self.save()
+                await self.save()
             if "!clear" in self.message:
-                self.clear()
+                await self.clear()
             else:
-                print(self.callback(self.message))
+                print(await self.callback(self.message))
                 self.message = ''
 
 
