@@ -25,15 +25,15 @@ def handle_arguments():
 async def dummy_function():
     pass
 
-async def notMain():
+async def runChatbot():
+    ## import the cli version of the chatbot
+    from .chatInterface import ChatInterface
+    from main.bot.bot_main import main
+    chatbox = ChatInterface(callback=main, save=dummy_function, clear = dummy_function)
+    await chatbox.start_chat()
+
+if __name__ == "__main__":
     if handle_arguments() == True:
         uvicorn.run(app, host="0.0.0.0", port=8000)
     else:
-        ## import the cli version of the chatbot
-        from .chatInterface import ChatInterface
-        from main.bot.bot_main import main
-        chatbox = ChatInterface(callback=main, save=dummy_function, clear = dummy_function)
-        await chatbox.start_chat()
-
-if __name__ == "__main__":
-    asyncio.run(notMain())
+        asyncio.run(runChatbot())

@@ -73,7 +73,7 @@ def regex(text:str) -> str:
     return text
 
 
-async def main(user_input:str):
+async def main(user_input:str) -> str:
     out = await gen(user_input)   
     # print(out['choices'][0]['text'].strip())
     functions = extract_function_calls(out['choices'][0]['text'])
@@ -95,6 +95,7 @@ async def main(user_input:str):
         print(out['choices'][0]['text'].strip())
 
     history.add_message(user="Utachi", message=out['choices'][0]['text'], type="AI",start="<|assistant|>")
+    return out['choices'][0]['text'].strip()
 
 if __name__ == "__main__":
     while True:

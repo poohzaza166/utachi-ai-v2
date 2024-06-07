@@ -10,8 +10,8 @@ class ChatMessage(BaseModel):
     user: str
     message: str
     msgType: str
-    start: Optional[int]
-    end: Optional[int]
+    start: Optional[str] = None
+    end: Optional[str] = None
 
 
 # Define ChatHistory return model
@@ -28,10 +28,11 @@ class RecieveMessage(BaseModel):
 
 @router.post("/chat", tags=["chat"], response_model=ChatMessage)
 async def chat(message: RecieveMessage):
-    output = main(message.message)
+    output = await main(message.message)
+    print(type(output))
     if output == "":
-        return ChatMessage(user="bot", message="I am sorry, I could not answer this question. i blame microsoft -pooh", msgType="text", start="", end="")
-    return ChatMessage(user="bot", message=output, msgType="text", start="", end="")
+        return ChatMessage(user="bot", message="I am sorry, I could not answer this question. i blame microsoft -pooh", msgType="text")
+    return ChatMessage(user="bot", message=output, msgType="text")
 
 @router.get("/chatHistory", tags=["chat"], response_model=ChatHistory)
 async def chatHistory():
