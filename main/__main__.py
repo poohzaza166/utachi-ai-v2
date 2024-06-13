@@ -4,6 +4,7 @@ import argparse
 from main.bot.api import router
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
+from main.audio import program
 
 app = FastAPI()
 app.add_middleware(
@@ -15,6 +16,7 @@ app.add_middleware(
 
 
 app.include_router(router)
+app.include_router(program.router)
 
 def handle_arguments():
     parser = argparse.ArgumentParser(description='Process server argument.')
@@ -34,6 +36,6 @@ async def runChatbot():
 
 if __name__ == "__main__":
     if handle_arguments() == True:
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+        uvicorn.run(app, host="0.0.0.0", port=8000, log_level='debug')
     else:
         asyncio.run(runChatbot())

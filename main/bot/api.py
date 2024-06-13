@@ -1,22 +1,14 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from typing import List, Optional, Union
-from main.bot.bot_main import main
+from typing import List, Optional, Union, Any
+from main.bot.bot_main import main, history
+from main.bot.lib.models import ChatMessage, ChatHistory
 
 router = APIRouter()
 
-# Define the chat message model for the base 
-class ChatMessage(BaseModel):
-    user: str
-    message: str
-    msgType: str
-    start: Optional[str] = None
-    end: Optional[str] = None
-
-
 # Define ChatHistory return model
-class ChatHistory(BaseModel):
-    history: List[ChatMessage]
+class ReplyChatHistory(BaseModel):
+    history: List[ChatMessage] = None
     status: str
     code: int
 
@@ -31,9 +23,22 @@ async def chat(message: RecieveMessage):
     output = await main(message.message)
     print(type(output))
     if output == "":
+        return ChatMessage(user="bot", message="I am sorry, I could not answer this question. i blame microsoft -pooh", msgType="AI")
+    return ChatMessage(user="bot", message=output, msgType="AI")
+
+@router.get("/chatHistory", tags=["chat"], response_model=ReplyChatHistory)
+async def chatHistory():
+    if history.getHistoryLen == 0:
+        print("No history")
+        return ReplyChatHistory(history=[], status="failed", code=200)
+    print("History found")
+    return ReplyChatHistory(history=history.exportHistory(), status="success", code=200)
+
+@router.post("/chatvoice", tags=["chat"], response_model=ChatMessage)
+async def chatVoice(message: RecieveMessage):
+    output = await main(message.message)
+    print(type(output))
+    if output == "":
         return ChatMessage(user="bot", message="I am sorry, I could not answer this question. i blame microsoft -pooh", msgType="text")
     return ChatMessage(user="bot", message=output, msgType="text")
 
-@router.get("/chatHistory", tags=["chat"], response_model=ChatHistory)
-async def chatHistory():
-    return ChatHistory(history=[], status="success", code=200)
