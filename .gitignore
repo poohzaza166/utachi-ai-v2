@@ -1,4 +1,5 @@
 bleeding edge
+vits
 *.bin
 __pycache__
 .env
@@ -8,7 +9,8 @@ __pycache__
 __pycache__/
 *.py[cod]
 *$py.class
-
+*.ggml
+*.gguf
 # C extensions
 *.so
 
