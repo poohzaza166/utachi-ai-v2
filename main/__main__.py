@@ -1,3 +1,6 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = "1"
+os.environ['NVIDIA_VISIBLE_DEVICES'] = "1"
 import uvicorn
 from fastapi import FastAPI, APIRouter
 import argparse

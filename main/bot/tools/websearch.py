@@ -33,7 +33,16 @@ def search(query: str) -> str:
 def search_firstresult(query: str) -> str:
     """Searches DuckDuckGo for a query and returns the first result."""
     ddgs = DDGS()
-    return f"According to {ddgs.text(query)[0]['title']} the answer is {ddgs.text(query)[0]['body']}"
+    msg = ""
+    res = ddgs.text(query)
+    # print(res)
+   
+    for i in range(4):
+        msg += f"\nThis site {res[i]['title']} Contain the following information.\n {res[i]['body']}"
+    
+
+    return msg
+
 
 def parse_and_get_webpage(query: str) -> str:
     """Parses the search results from DuckDuckGo."""
