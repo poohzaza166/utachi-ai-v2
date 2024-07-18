@@ -1,0 +1,54 @@
+{
+    "code": "###Instruction: I am developing a multilingual chatbot for my clothing store. Analyze the similarity between our customers' inquiries in different languages.\n###Output: <<<domain>>>: Natural Language Processing Sentence Similarity\n<<<api_call>>>: BertModel.from_pretrained('setu4993/LaBSE')\n<<<api_provider>>>: Hugging Face Transformers\n<<<explanation>>>: 1. Import the necessary libraries: torch, BertModel, and BertTokenizerFast from transformers.\n2. Create a tokenizer and a model using the LaBSE pre-trained model 'setu4993/LaBSE'.\n3. Tokenize the sentences in different languages and get tensors as input for the model.\n4. Use the LaBSE model to get embeddings for each sentence.\n5. Calculate the similarity between the sentence embeddings to determine the similarity between the inquiries in different languages.\n<<<code>>>: import torch\nfrom transformers import BertModel, BertTokenizerFast\n\ntokenizer = BertTokenizerFast.from_pretrained('setu4993/LaBSE')\nmodel = BertModel.from_pretrained('setu4993/LaBSE')\nmodel = model.eval()\n\n# Example sentences in different languages\nenglish_sentences = [\"Do you have this shirt in small size?\"]\nitalian_sentences = [\"Avete questa camicia in taglia piccola?\"]\njapanese_sentences = [\"\u3053\u306e\u30b7\u30e3\u30c4\u306f\uff33\u30b5\u30a4\u30ba\u306f\u3042\u308a\u307e\u3059\u304b\uff1f\"]\n\n# Tokenize and get tensors\nenglish_inputs = tokenizer(english_sentences, return_tensors='pt', padding=True)\nitalian_inputs = tokenizer(italian_sentences, return_tensors='pt', padding=True)\njapanese_inputs = tokenizer(japanese_sentences, return_tensors='pt', padding=True)\n\n# Get embeddings\nwith torch.no_grad():\n    english_outputs = model(**english_inputs)\n    italian_outputs = model(**italian_inputs)\n    japanese_outputs = model(**japanese_inputs)\n\nenglish_embeddings = english_outputs.pooler_output\nitalian_embeddings = italian_outputs.pooler_output\njapanese_embeddings = japanese_outputs.pooler_output\n\n# Calculate similarity between embeddings\nsimilarity_scores = torch.cosine_similarity(english_embeddings, italian_embeddings)\n",
+    "api_call": "BertModel.from_pretrained('setu4993/LaBSE')",
+    "provider": "Hugging Face Transformers",
+    "api_data": {
+        "domain": "Natural Language Processing Sentence Similarity",
+        "framework": "Hugging Face Transformers",
+        "functionality": "Feature Extraction",
+        "api_name": "setu4993/LaBSE",
+        "api_call": "BertModel.from_pretrained('setu4993/LaBSE')",
+        "api_arguments": [
+            "english_sentences",
+            "italian_sentences",
+            "japanese_sentences"
+        ],
+        "python_environment_requirements": [
+            "torch",
+            "transformers"
+        ],
+        "example_code": "import torch\nfrom transformers import BertModel, BertTokenizerFast\ntokenizer = BertTokenizerFast.from_pretrained('setu4993/LaBSE')\nmodel = BertModel.from_pretrained('setu4993/LaBSE')\nmodel = model.eval()\nenglish_sentences = [\n 'dog',\n 'Puppies are nice.',\n 'I enjoy taking long walks along the beach with my dog.',\n]\nenglish_inputs = tokenizer(english_sentences, return_tensors='pt', padding=True)\nwith torch.no_grad():\n english_outputs = model(**english_inputs)\nenglish_embeddings = english_outputs.pooler_output",
+        "performance": {
+            "dataset": "CommonCrawl and Wikipedia",
+            "accuracy": "Not Specified"
+        },
+        "description": "Language-agnostic BERT Sentence Encoder (LaBSE) is a BERT-based model trained for sentence embedding for 109 languages. The pre-training process combines masked language modeling with translation language modeling. The model is useful for getting multilingual sentence embeddings and for bi-text retrieval."
+    }
+}
+{
+    "Instruction": "I want to create three Struct scalars using pyarrow.\n",
+    "Functions": [
+        "{'name': 'pyarrow', 'api_name': 'Struct', 'description': 'Concrete class for struct scalars', 'parameters': {'required': [], 'optional': []}}\n",
+        "{'name': 'alpha', 'api_name': 'gcloud.alpha.access_context_manager.perimeters().describe', 'description': 'Show details about a service perimeter in a given access policy', 'parameters': [{'name': 'perimeter', 'description': 'ID of the perimeter or fully qualified identifier for the perimeter.'}, {'name': 'policy', 'description': 'The ID of the access policy.'}]}\n",
+        "{'name': 'apigee', 'api_name': 'gcloud.alpha.apigee.products().update', 'description': 'Update an existing Apigee API product', 'parameters': [{'name': 'product'}, {'name': 'organization'}, {'name': 'display_name'}, {'name': 'all_apis'}, {'name': 'add_api'}, {'name': 'remove_api'}, {'name': 'all_environments'}, {'name': 'add_environment'}, {'name': 'remove_environment'}, {'name': 'all_resources'}, {'name': 'add_resource'}, {'name': 'remove_resource'}, {'name': 'automatic_approval'}, {'name': 'manual_approval'}, {'name': 'clear_attributes'}, {'name': 'add_attribute'}, {'name': 'remove_attribute'}, {'name': 'clear_description'}, {'name': 'description'}, {'name': 'clear_oauth_scopes'}, {'name': 'add_oauth_scope'}, {'name': 'remove_oauth_scope'}, {'name': 'clear_quota'}, {'name': 'quota'}, {'name': 'quota_interval'}, {'name': 'quota_unit'}, {'name': 'internal_access'}, {'name': 'private_access'}, {'name': 'public_access'}]}\n",
+        "{'name': 'aws', 'api_name': 'aws.iotdeviceadvisor.start_suite_run', 'description': 'Starts a Device Advisor test suite run.See also: AWS API Documentation\\n', 'parameters': [{'name': 'suite_definition_id', 'description': 'Suite definition ID of the test suite.'}, {'name': 'suite_definition_version', 'description': 'Suite definition version of the test suite.'}, {'name': 'suite_run_configuration', 'description': 'Suite run configuration.\\nprimaryDevice -> (structure)\\n\\nSets the primary device for the test suite run. This requires a thing ARN or a certificate ARN.\\nthingArn -> (string)\\n\\nLists device\u00e2\\x80\\x99s thing ARN.\\ncertificateArn -> (string)\\n\\nLists device\u00e2\\x80\\x99s certificate ARN.\\ndeviceRoleArn -> (string)\\n\\nLists device\u00e2\\x80\\x99s role ARN.\\n\\nselectedTestList -> (list)\\n\\nSets test case list.\\n(string)\\n\\nparallelRun -> (boolean)\\n\\nTRUE if multiple test suites run in parallel.'}, {'name': 'tags', 'description': 'The tags to be attached to the suite run.\\nkey -> (string)\\nvalue -> (string)'}]}\n",
+        "{'name': 'alpha', 'api_name': 'gcloud.alpha.bigtable', 'description': 'Update an existing Cloud Bigtable table', 'parameters': [{'name': 'table'}, {'name': 'instance'}, {'name': 'async'}, {'name': 'deletion_protection'}, {'name': 'change_stream_retention_period'}, {'name': 'clear_change_stream_retention_period'}]}\n",
+        "{'name': 'RapidAPI', 'api_name': 'requests.get', 'description': 'Income by zipcode is a simple API for getting income by zipcode data in the United States.', 'parameters': [{'name': 'zip', 'description': '', 'type': 'STRING'}]}"
+    ],
+    "Output": [
+        "pyarrow.Struct()",
+        "pyarrow.Struct()",
+        "pyarrow.Struct()"
+    ]
+}
+{
+    "Instruction": "I want to create two Time32 instances.\n",
+    "Functions": [
+        "{'name': 'pyarrow', 'api_name': 'Time32', 'description': 'Concrete class for time32 data types.', 'parameters': {'required': [], 'optional': []}}\n",
+        "{'name': 'aws', 'api_name': 'aws.lookoutvision.update_dataset_entries', 'description': 'Adds or updates one or more JSON Line entries in a dataset. A JSON Line includes information about an image used for training or testing an Amazon Lookout for Vision model.For more information, see Defining JSON lines for anomaly classification in the Amazon Lookout for Vision Developer Guide.NoteThe images you reference in the source-ref field of a JSON line, must be in the same S3 bucket as the existing images in the dataset.This operation requires permissions to perform the lookoutvision:UpdateDatasetEntries operation.', 'parameters': [{'name': 'project_name', 'description': 'The name of the project that contains the dataset that you want to update.'}, {'name': 'dataset_type', 'description': 'The type of the dataset that you want to update. Specify train to update the training dataset. Specify test to update the test dataset. If you have a single dataset project, specify train .'}, {'name': 'changes', 'description': 'The entries to add to the dataset.'}, {'name': 'client_token', 'description': 'ClientToken is an idempotency token that ensures a call to UpdateDatasetEntries completes only once. You choose the value to pass. For example, An issue might prevent you from getting a response from UpdateDatasetEntries . In this case, safely retry your call to UpdateDatasetEntries by using the same ClientToken parameter value.\\nIf you don\u00e2\\x80\\x99t supply a value for ClientToken , the AWS SDK you are using inserts a value for you. This prevents retries after a network error from making multiple updates with the same dataset entries. You\u00e2\\x80\\x99ll need to provide your own value for other use cases.\\nAn error occurs if the other input parameters are not the same as in the first request. Using a different value for ClientToken is considered a new call to UpdateDatasetEntries . An idempotency token is active for 8 hours.'}]}"
+    ],
+    "Output": [
+        "pyarrow.Time32()",
+        "pyarrow.Time32()"
+    ]
+}

@@ -24,6 +24,7 @@ app.include_router(program.router)
 def handle_arguments():
     parser = argparse.ArgumentParser(description='Process server argument.')
     parser.add_argument('--server', action='store_true', help='Server argument')
+    # parser.add_argument('--backend', choices=['llamacpp', 'pytorchtransformer'], required=True, help='Choose backend: llamacpp or pytorchtransformer')
     args = parser.parse_args()
     return args.server
 
@@ -33,12 +34,13 @@ async def dummy_function():
 async def runChatbot():
     ## import the cli version of the chatbot
     from .chatInterface import ChatInterface
-    from main.bot.bot_main import main
-    chatbox = ChatInterface(callback=main, save=dummy_function, clear = dummy_function)
+    from main.bot.bot_main import ChatBot
+    chatbot = ChatBot()
+    chatbox = ChatInterface(callback=chatbot.main, save=dummy_function, clear = dummy_function)
     await chatbox.start_chat()
 
 if __name__ == "__main__":
     if handle_arguments() == True:
-        uvicorn.run(app, host="0.0.0.0", port=8000, log_level='debug')
+        uvicorn.run(app, host="0.0.0.0", port=40635, log_level='debug')
     else:
         asyncio.run(runChatbot())

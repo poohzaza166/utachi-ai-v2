@@ -1,8 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional, Union, Any
-from main.bot.bot_main import main, history
+from main.bot.bot_main import ChatBot
 from main.bot.lib.models import ChatMessage, ChatHistory
+from main.bot.errorException import MalFormAnswerContainingFunctioncall
+
+chatbot = ChatBot() # Create a new instance of the chatbot class
+main = chatbot.main
+history = chatbot.history
 
 router = APIRouter()
 
@@ -20,12 +25,15 @@ class RecieveMessage(BaseModel):
 
 @router.post("/chat", tags=["chat"], response_model=ChatMessage)
 async def chat(message: RecieveMessage):
-    output = await main(message.message)
-    print(type(output))
-    if output == "":
-        return ChatMessage(user="bot", message="I am sorry, I could not answer this question. i blame microsoft -pooh", msgType="AI")
-    return ChatMessage(user="bot", message=output, msgType="AI")
-
+    try: 
+        output = await main(message.message)
+        print(type(output))
+        if output == "":
+            return ChatMessage(user="bot", message="I am sorry, I could not answer this question. i blame microsoft -pooh", msgType="AI")
+        return ChatMessage(user="bot", message=output, msgType="AI")
+    except MalFormAnswerContainingFunctioncall as e:
+        return HTTPException(status_code=505, detail=e)
+    
 @router.get("/chatHistory", tags=["chat"], response_model=ReplyChatHistory)
 async def chatHistory():
     if history.getHistoryLen == 0:

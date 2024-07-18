@@ -1,1 +1,0 @@
-: <functioncall>{"name": "DuckSearch", "arguments": {"query": "lycoris recoil anime summary"}</functioncall>

@@ -11,12 +11,12 @@ from dataclasses import dataclass
 
 qaunt_config = BitsAndBytesConfig(load_in_8bit=True)
 
-# model_ = AutoModelForCausalLM.from_pretrained("microsoft/Phi-3-medium-128k-instruct", device_map="auto", trust_remote_code=True, quantization_config=qaunt_config)
+model_ = AutoModelForCausalLM.from_pretrained("microsoft/Phi-3-medium-128k-instruct", device_map="auto", trust_remote_code=True, quantization_config=qaunt_config)
 
-# tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-medium-128k-instruct")
+tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-medium-128k-instruct")
 
-# model = PeftModel.from_pretrained(model_, "/home/pooh/code/utachi-ai2/model3")
-# model = model_
+model = PeftModel.from_pretrained(model_, "/home/pooh/code/utachi-ai2/model3")
+model = model_
 
 # @dataclass
 # class config:
@@ -40,11 +40,13 @@ class wordStop(StoppingCriteria):
                         return True
         return False
 
-stoplist = StoppingCriteriaList([wordStop(stop_words=["<|end|>", "pooh: "],tokenizer=tokenizer, starting_idx=0)])
 
 
-def genrate_model(prompt: str,) -> str:
-    # tokenizer.pad_token_id 
+def genrate_model(prompt: str, stoplist: list = None) -> str:
+    # tokenizer.pad_token_id
+    if stoplist != None:
+        stoplist = StoppingCriteriaList([wordStop(stop_words=stoplist,tokenizer=tokenizer, starting_idx=0)])
+
     input_ids = tokenizer(prompt, return_tensors="pt").to("cuda")
     output = model.generate(**input_ids, 
                             temperature=1.0,

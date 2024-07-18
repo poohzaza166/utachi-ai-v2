@@ -1,5 +1,6 @@
 bleeding edge
 vits
+model
 *.bin
 __pycache__
 .env

@@ -10,7 +10,7 @@ def translate(text: str) -> str:
     tokenizer.src_lang = "eng_Latn"
     inputs = tokenizer(text=text, return_tensors="pt")
     translated_tokens = model.generate(
-        **inputs, forced_bos_token_id=tokenizer.lang_code_to_id["jpn_Jpan"]
+        **inputs, forced_bos_token_id=tokenizer.convert_tokens_to_ids("jpn_Jpan")
     )
     message = tokenizer.decode(translated_tokens[0], skip_special_tokens=True)
     return message
