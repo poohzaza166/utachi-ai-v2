@@ -1,75 +1,42 @@
-import json
 import re
 
-def parse_function_call(text):
-    # Try to parse as JSON first
-    try:
-        data = json.loads(text)
-        if isinstance(data, dict) and 'function_call' in data:
-            return parse_json_function_call(data['function_call'])
-    except json.JSONDecodeError:
-        pass
+def replace_prompt(text, prompt: str, replacement):
+    if text.startswith(prompt):
+        return text[len(prompt):]
+    else:
 
-    # If not JSON, try to extract function call using regex
-    return parse_text_function_call(text)
-
-def parse_json_function_call(function_call):
-    if isinstance(function_call, str):
-        try:
-            function_call = json.loads(function_call)
-        except json.JSONDecodeError:
-            return {'error': 'Invalid function_call format'}
-
-    name = function_call.get('name', '')
-    arguments = function_call.get('arguments', '')
-
-    if isinstance(arguments, str):
-        try:
-            arguments = json.loads(arguments)
-        except json.JSONDecodeError:
-            pass  # Keep arguments as string if it's not valid JSON
-
-    return {
-        'name': name,
-        'arguments': arguments
-    }
-
-def parse_text_function_call(text):
-    function_match = re.search(r'"function_call"\s*:\s*({[^}]*})', text)
-
-    if not function_match:
-        return {'error': 'No function call found'}
-
-    function_content = function_match.group(1)
-    try:
-        function_call = json.loads(function_content)
-        return parse_json_function_call(function_call)
-    except json.JSONDecodeError:
-        # If JSON parsing fails, try regex
-        name_match = re.search(r'"name"\s*:\s*"([^"]*)"', function_content)
-        args_match = re.search(r'"arguments"\s*:\s*([\'"])((?:(?!\1).)*)\1', function_content)
-
-        name = name_match.group(1) if name_match else ''
-        arguments = args_match.group(2) if args_match else ''
-
-        try:
-            arguments = json.loads(arguments)
-        except json.JSONDecodeError:
-            pass  # Keep arguments as string if it's not valid JSON
-
-        return {
-            'name': name,
-            'arguments': arguments
-        }
+        # Create a pattern that matches the prompt literally
+        pattern = re.compile(re.escape(prompt), re.DOTALL)
+        
+        # Perform the replacement
+        replaced_text = pattern.sub(replacement, text)
+        
+        return replaced_text
 
 # Test cases
-test_cases = [
-    '{ "message": "Here are the latest news headlines for the United States:", "function_call": {"name": "get_news_headlines", "arguments": {"country": "France"}} }',
-    '{ "message": "Here are the latest news headlines for the United States:", "function_call": "{\"name\": \"get_news_headlines\", \"arguments\": \'{\"country\": \"France\"}\'}" }',
-    'The message is "Here are the latest news headlines for the United States:" and the function_call is {"name": "get_news_headlines", "arguments": \'{"country": "France"}\'}',
-]
+text1 = "Hello <|user|>! How are you, <|user|>?"
+prompt1 = "<|user|>"
+replacement1 = "Alice"
 
-for i, case in enumerate(test_cases, 1):
-    print(f"Test case {i}:")
-    print(parse_function_call(case))
-    print()
+text2 = "The quick (brown) fox jumps over the lazy dog."
+prompt2 = "(brown)"
+replacement2 = "red"
+
+text3 = "This is a multi-line text.\n<|user|> appears here.\nAnd here <|user|> too."
+prompt3 = "<|user|>"
+replacement3 = "TOKEN"
+
+prompt4 = """[INST]You are a helpfull assistant name Utachi.[/INST]
+!begin
+<|user|> what day is it today
+<|assistant|>"""
+text4 = """[INST]You are a helpfull assistant name Utachi.[/INST]
+!begin
+<|user|> what day is it today
+<|assistant|> I'm sorry, but as an AI language model, I don't have real-time capabilities to provide the current date. Please check your local calendar or device for that information.<|end|>"""
+replacement4 = ""
+# Run tests
+print(replace_prompt(text1, prompt1, replacement1))
+print(replace_prompt(text2, prompt2, replacement2))
+print(replace_prompt(text3, prompt3, replacement3))
+print(replace_prompt(text4, prompt4, replacement4))

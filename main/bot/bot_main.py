@@ -11,7 +11,7 @@ from main.bot.lib.event import PluginManager
 from main.bot.errorException import NoFunctionFoundError, MalFormAnswerContainingFunctioncall
 
 
-# from main.bot.infrence_pytorch import genrate_model
+from main.bot.infrence_pytorch import genrate_model
 
 
 fn = """{"name": "function_name", "arguments": {"arg_1": "value_1", "arg_2": value_2, ...}}"""
@@ -40,20 +40,20 @@ ${human}
 
 
 
-llm = Llama(model_path="/home/pooh/code/utachi-ai2/ggml-model-Q4_K_M.gguf",
-                seed=0,
-                top_k=3,
-                top_p=1.242,
-                repeat_penalty=1.115,
-                temperature=0.15,
-                # n_ctx=32768,  
-                # n_ctx=131072,
-                n_ctx=8096,
-                n_threads=8,
-                # n_gpu_layers=15
-                n_gpu_layers=-1,
-                # stop=["pooh:", "Utachi:","<|im_end|>", "<function_result>","<|assistant|>", "<|function_result|>", "<|function_result|>SYS:", " Pooh:"]
-                )
+# llm = Llama(model_path="/home/pooh/code/utachi-ai2/ggml-model-Q4_K_M.gguf",
+#                 seed=0,
+#                 top_k=3,
+#                 top_p=1.242,
+#                 repeat_penalty=1.115,
+#                 temperature=0.15,
+#                 # n_ctx=32768,  
+#                 # n_ctx=131072,
+#                 n_ctx=8096,
+#                 n_threads=8,
+#                 # n_gpu_layers=15
+#                 n_gpu_layers=-1,
+#                 # stop=["pooh:", "Utachi:","<|im_end|>", "<function_result>","<|assistant|>", "<|function_result|>", "<|function_result|>SYS:", " Pooh:"]
+#                 )
         
 tools = [timeTool, DuckSearch, Weather]
 
@@ -117,10 +117,11 @@ class ChatBot:
     async def gen(self, user_input:str) -> str:
         promt = await self.prompts.generatePrompt(chatHistory=self.history, human=user_input, tools=tools)
         print(promt)
-        out = llm.create_completion(promt,stop=["<|im_end|>","<|user|>", "SYS", "<|function_result|>", " Pooh: ", "\n Pooh: ", "\n Utachi:", ".\n "], max_tokens=3200, echo=False, stream=False)
+        # out = llm.create_completion(promt,stop=["<|im_end|>","<|user|>", "SYS", "<|function_result|>", " Pooh: ", "\n Pooh: ", "\n Utachi:", ".\n "], max_tokens=3200, echo=False, stream=False)
+        out = genrate_model(promt,stoplist=["<|im_end|>","<|user|>", "SYS", "<|function_result|>"] )
         print(out)
-        return out['choices'][0]['text'].strip()
-
+        # return out['choices'][0]['text'].strip()
+        return out
 
 if __name__ == "__main__":
     while True:

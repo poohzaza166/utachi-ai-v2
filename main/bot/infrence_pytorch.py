@@ -8,14 +8,23 @@ from typing import List
 import random
 from peft import PeftModel
 from dataclasses import dataclass
+import re
 
-qaunt_config = BitsAndBytesConfig(load_in_8bit=True)
+torch.manual_seed(0)
 
-model_ = AutoModelForCausalLM.from_pretrained("microsoft/Phi-3-medium-128k-instruct", device_map="auto", trust_remote_code=True, quantization_config=qaunt_config)
+bnb_config = BitsAndBytesConfig(
+    # load_in_8bit=True,
+    # llm_int8_has_fp16_weight=True,
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_compute_dtype=torch.float16
+)
+
+model_ = AutoModelForCausalLM.from_pretrained("/run/media/pooh/transfer/finetune-phi3-mini-unslot/finetune0/model3", device_map="auto", trust_remote_code=True, )
 
 tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-medium-128k-instruct")
 
-model = PeftModel.from_pretrained(model_, "/home/pooh/code/utachi-ai2/model3")
+# model = PeftModel.from_pretrained(model_, "/run/media/pooh/transfer/finetune-phi3-medium-agent/microsoft/Phi-3-medium-128k-instruct-finetunephi3/checkpoint-250")
 model = model_
 
 # @dataclass
@@ -48,22 +57,47 @@ def genrate_model(prompt: str, stoplist: list = None) -> str:
         stoplist = StoppingCriteriaList([wordStop(stop_words=stoplist,tokenizer=tokenizer, starting_idx=0)])
 
     input_ids = tokenizer(prompt, return_tensors="pt").to("cuda")
+
     output = model.generate(**input_ids, 
-                            temperature=1.0,
-                            max_length=32000,
-                            top_p=1.12,
-                            top_k=0,
+                            temperature=0.15,
+                            max_length=128000,
+                            top_p=1.242,
+                            top_k=3,
+                            # seed=0,
                             # seed=random.randint(0,65535),
                             do_sample=True,
-                            repetition_penalty=1.1,
-                            stopping_criteria=stoplist)
-    return tokenizer.decode(output[0])
+                            repetition_penalty=1.115,
+                            # stopping_criteria=stoplist
+                            # early_stopping=True,
+                            )
+
+    full_msg = tokenizer.decode(output[0])
+    completion = full_msg[len(prompt):].strip()
+
+    return completion
+
+
 if __name__ == "__main__":
-    inst_prompt = """[INST]You are a helpfull assistant name Utachi.[/INST]\n!begin\n"""
+    inst_prompt = """INST]You are a helpfull assistant name Utachi.You can do functioncalling.Think through this step by step! 
+You will have access to the following functions:
+{"name": "timeTool", "description": "Use this tool to get the current time", "parameters": {}},{"name": "DuckSearch", "description": "Use a SearchEngine to look up information on the internet.", "parameters": {'query': {'type': 'str', 'description': 'The query to search using DuckDuckGo.'}}},{"name": "Weather", "description": "Use To get the weather of a location.", "parameters": {'location': {'type': 'str', 'description': 'The location to get the weather of.'}}},
+To use these functions format your response like this:
+<multiplefunctions>
+    <functioncall>{"name": "function_name", "arguments": {"arg_1": "value_1", "arg_2": value_2, ...}}</functioncall>
+    <functioncall>{"name": "function_name", "arguments": {"arg_1": "value_1", "arg_2": value_2, ...}}</functioncall>
+    ...
+</multiplefunctions>
+
+Try to Converse and response to User by your self first.
+Give a short and consise response to the user. 
+Use function only when needed. Do not use function when you know the Correct Answer.
+[/INST]
+!begin
+"""
 
     # torch.manual_seed(random.randint(0,65535))
     ms = ""
-    msg = genrate_model("<|user|>write a long poem\n<|assistant|>")
-    ms += "\n" + msg + "\n"
-    print(ms)
+    msg = genrate_model(f"{inst_prompt}<|user|>what day is it today\n<|assistant|>\n")
+    # ms += "\n" + msg + "\n"
+    print(msg)
     # print(genrate_model(inst_prompt+"<|user|>\nCan you do formatted json like function calling?\n<|assistant|>"))
