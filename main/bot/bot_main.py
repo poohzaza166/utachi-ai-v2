@@ -1,4 +1,4 @@
-from main.bot.lib.tools import BaseTool, extract_function_calls, run_function_calls, parse_function_call
+from main.bot.lib.tools import BaseTool, extract_function_calls, run_function_calls, parse_function_call, parse_message_block
 from main.bot.lib.prompts import PromptTemplate, ChatHistory
 from llama_cpp import Llama
 from main.bot.tools.websearch import DuckSearch
@@ -16,7 +16,7 @@ from main.bot.infrence_pytorch import genrate_model
 
 fn = """{"name": "function_name", "arguments": {"arg_1": "value_1", "arg_2": value_2, ...}}"""
 
-inst = '''[INST]You are a helpfull assistant name Utachi.You can do functioncalling.Think through this step by step! 
+inst = '''[INST]You are a helpfull assistant name Utachi.You can do functioncalling.
 You will have access to the following functions:
 ${functions}
 To use these functions format your response like this:
@@ -32,6 +32,10 @@ Use function only when needed. Do not use function when you know the Correct Ans
 [/INST]
 !begin
 
+<|user|>
+hi there how are u
+<|assistant|>
+I'm doing great today. How about yourself?
 ${chat_history}
 <|user|>
 ${human}
@@ -51,7 +55,7 @@ ${human}
 #                 n_ctx=8096,
 #                 n_threads=8,
 #                 # n_gpu_layers=15
-#                 n_gpu_layers=-1,
+#                 # n_gpu_layers=-1,
 #                 # stop=["pooh:", "Utachi:","<|im_end|>", "<function_result>","<|assistant|>", "<|function_result|>", "<|function_result|>SYS:", " Pooh:"]
 #                 )
         
